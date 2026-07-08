@@ -569,9 +569,10 @@ var MOD_RENAME={
   'WIDELEG CINTURA INTERMEDIARIA':'Wide Leg Cintura Intermediária',
   'WIDELEG CARGO':'Wide Leg Cargo','WIDE LEG CARGO':'Wide Leg Cargo',
   'WIDELEG PLUS SIZE':'Wide Leg Plus Size',
-  'WIDECROPPED':'Wide Cropped','WIDE CROPPED':'Wide Cropped',
-  'WIDECROPPED LIPO':'Wide Cropped Lipo',
-  'WIDECROPPED PLUS SIZE':'Wide Cropped Plus Size',
+  'WIDECROPPED':'Wide Cropped','WIDE CROPPED':'Wide Cropped','WIDECRROPPED':'Wide Cropped',
+  'WIDECROPPED LIPO':'Wide Cropped Lipo','WIDECRROPPED LIPO':'Wide Cropped Lipo',
+  'WIDECROPPED PLUS SIZE':'Wide Cropped Plus Size','WIDECRROPPED PLUS SIZE':'Wide Cropped Plus Size',
+  'WIDECROPPED PLUS':'Wide Cropped Plus Size','WIDECRROPPED PLUS':'Wide Cropped Plus Size',
   'SUPERWIDE':'Super Wide','SUPER WIDE':'Super Wide',
   'BOOTCUT':'Boot Cut','BOOT CUT':'Boot Cut',
   'BOOTCUT COUNTRY':'Boot Cut Country',
@@ -590,8 +591,9 @@ var MOD_RENAME={
   'RETACARPINTEIRO COUNTRY':'Reta Carpinteiro Country',
   'CIGARRETE LIPO':'Cigarrete Lipo',
   'CIGARRETE SPORT FINO':'Cigarrete Sport Fino',
-  'CIGARRETE PLUS SIZE':'Cigarrete Plus Size',
+  'CIGARRETE PLUS SIZE':'Cigarrete Plus Size','CIGARRETE PLUS':'Cigarrete Plus Size',
   'CALCAFEM.CIGARRETE':'Cigarrete','CALCAFEM. CIGARRETE':'Cigarrete',
+  'CALCAMASC.CIGARRETE':'Cigarrete','CALCA MASC.CIGARRETE':'Cigarrete','CALCA MASC. CIGARRETE':'Cigarrete',
   'MEIACOXA':'Meia Coxa',
   'MEIACOXA ALFAIATARIA':'Meia Coxa Alfaiataria',
   'MEIACOXA MAIS CURTO':'Meia Coxa Mais Curto',
@@ -615,9 +617,9 @@ var MOD_RENAME={
   'EVASE':'Évase',
   'LAPIS':'Lápis',
   'MIDI PLUSSIZE':'Midi Plus Size',
-  'SPORT FINO':'Sport Fino',
-  'SPORT FINO CROPPED':'Sport Fino Cropped',
-  'SPORT FINO MEDIA':'Sport Fino Média',
+  'SPORT FINO':'Sport Fino','SPORTFINO':'Sport Fino',
+  'SPORT FINO CROPPED':'Sport Fino Cropped','SPORTFINO CROPPED':'Sport Fino Cropped',
+  'SPORT FINO MEDIA':'Sport Fino Média','SPORTFINO MEDIA':'Sport Fino Média',
 };
 
 function renMod(s){
@@ -629,10 +631,11 @@ function renMod(s){
 function getCompSeg(seg){
   var tipoMap={
     'CF':'Calça Fem.','CM':'Calça Masc.',
-    'S2':'Shorts','SS':'Shorts',
-    'SA':'Saia','BF':'Bermuda Fem.',
+    'S2':'Shorts','SS':'Shorts','B2':'Shorts',
+    'SA':'Saia',
     'BM':'Bermuda Masc.','B3':'Bermuda Masc.',
-    'BL':'Outros','T2':'Outros','V2':'Outros'
+    'CA':'Camisa','JQ':'Jaqueta',
+    'BL':'Blusa','T2':'Top','V2':'Vestido'
   };
   var grupos={};
   var refsVistas={};
@@ -640,26 +643,31 @@ function getCompSeg(seg){
     var ref=r[1],desc=r[2];
     var u=desc.toUpperCase();
     var s;
-    if(u.indexOf('PLUS SIZE')>=0||u.indexOf('PLUSSIZE')>=0) s='plus';
+    if(u.indexOf('PLUS')>=0) s='plus';
     else if(u.indexOf('COUNTRY')>=0) s='country';
-    else if(ref.startsWith('CF')||ref.startsWith('SA')||ref.startsWith('BF')||ref.startsWith('SS')||ref.startsWith('BL')||ref.startsWith('T2')||ref.startsWith('V2')||ref.startsWith('S2')) s='fem';
+    else if(ref.startsWith('CF')||ref.startsWith('SA')||ref.startsWith('B2')||ref.startsWith('SS')||ref.startsWith('BL')||ref.startsWith('T2')||ref.startsWith('V2')||ref.startsWith('S2')) s='fem';
     else if(ref.startsWith('CM')||ref.startsWith('BM')||ref.startsWith('B3')) s='masc';
+    else if(ref.startsWith('CA')||ref.startsWith('JQ')) s=(u.indexOf('MASC')>=0)?'masc':'fem';
     else s='fem';
     if(s!==seg) return;
     var prefix2=ref.substring(0,2);
-    var tipo=tipoMap[prefix2]||'Outros';
+    var tipo=tipoMap[prefix2]||(u.indexOf('CAMISA')>=0?'Camisa':u.indexOf('JAQUETA')>=0?'Jaqueta':u.indexOf('BLUSA')>=0?'Blusa':u.indexOf('TOP ')>=0||u.indexOf('TOP FEM')>=0?'Top':u.indexOf('VESTIDO')>=0?'Vestido':'Calça Fem.');
     var modRaw;
-    if(tipo==='Outros'){
+    if(tipo==='Camisa'||tipo==='Jaqueta'||tipo==='Blusa'||tipo==='Top'||tipo==='Vestido'){
       modRaw=u
-        .replace('BLUSA FEM.CROPPED','Blusa Cropped').replace('BLUSA FEM. CROPPED','Blusa Cropped')
-        .replace('BLUSA FEM.','Blusa').replace('BLUSA FEM. ','Blusa ')
-        .replace('TOP FEM. CROPPED','Top Cropped').replace('TOP FEM.CROPPED','Top Cropped')
-        .replace('TOP FEM.','Top').replace('TOP FEM. ','Top ')
-        .replace('VESTIDO FEM. LONGO','Vestido Longo').replace('VESTIDO FEM.LONGO','Vestido Longo')
-        .replace('VESTIDO FEM.','Vestido').replace('VESTIDO FEM. ','Vestido ');
-      if(modRaw.indexOf('JAQUETA')>=0&&modRaw.indexOf('MASC')>=0) modRaw='Jaqueta Masc';
-      else if(modRaw.indexOf('JAQUETA')>=0) modRaw='Jaqueta Fem';
-      modRaw=modRaw.trim().toLowerCase().replace(/\b\w/g,function(c){return c.toUpperCase();});
+        .replace('CAMISA FEM.CROPPED','Cropped').replace('CAMISA FEM. CROPPED','Cropped')
+        .replace('CAMISA FEM.','').replace('CAMISA MASC.','').replace('CAMISA FEM. ','').replace('CAMISA MASC. ','')
+        .replace('JAQUETAFEM.BOMBER','Bomber').replace('JAQUETA FEM.CURTA','Curta').replace('JAQUETA FEM. CURTA','Curta')
+        .replace('JAQUETA FEM.','').replace('JAQUETA MASC.','').replace('JAQUETA FEM. ','').replace('JAQUETA MASC. ','')
+        .replace('BLUSA FEM.CROPPED','Cropped').replace('BLUSA FEM. CROPPED','Cropped')
+        .replace('BLUSA FEM.','').replace('BLUSA FEM. ','')
+        .replace('TOP FEM. CROPPED','Cropped').replace('TOP FEM.CROPPED','Cropped')
+        .replace('TOP FEM.','').replace('TOP FEM. ','')
+        .replace('VESTIDO FEM. LONGO','Longo').replace('VESTIDO FEM.LONGO','Longo')
+        .replace('VESTIDO FEM.','').replace('VESTIDO FEM. ','');
+      modRaw=modRaw.trim();
+      if(!modRaw||modRaw.length<2) modRaw='Tradicional';
+      modRaw=modRaw.toLowerCase().replace(/\b\w/g,function(c){return c.toUpperCase();});
     } else {
       modRaw=u;
       ['CALCA FEM. ','CALCA MASC. ','CALCA FEM.','CALCA MASC.',
@@ -668,8 +676,9 @@ function getCompSeg(seg){
        'SHORT SAIA FEM. ','SHORT SAIA FEM.'].forEach(function(p){
         if(modRaw.indexOf(p)===0) modRaw=modRaw.slice(p.length).trim();
       });
-      // tratar CALCAFEM.CIGARRETE que não tem espaço
+      // tratar CALCAFEM.CIGARRETE / CALCAMASC.CIGARRETE que não tem espaço
       if(modRaw.indexOf('CALCAFEM.')===0) modRaw=modRaw.slice(9).trim();
+      if(modRaw.indexOf('CALCAMASC.')===0) modRaw=modRaw.slice(10).trim();
       // tratar SAIA FEM . MEDIA (com espaço antes do ponto)
       if(modRaw==='SAIA FEM . MEDIA'||modRaw==='FEM . MEDIA'||modRaw==='. MEDIA'||modRaw==='MEDIA') modRaw='MEDIA';
       modRaw=renMod(modRaw);
@@ -682,7 +691,7 @@ function getCompSeg(seg){
       refsVistas[ref]=true;
     }
   });
-  var tipoOrder=['Calça Fem.','Calça Masc.','Shorts','Saia','Bermuda Fem.','Bermuda Masc.','Outros'];
+  var tipoOrder=['Calça Fem.','Calça Masc.','Shorts','Saia','Bermuda Masc.','Camisa','Jaqueta','Blusa','Top','Vestido'];
   var result=[];
   tipoOrder.forEach(function(t){
     if(!grupos[t]) return;
@@ -4275,12 +4284,13 @@ var RANK_ANT={};
 function getTipo(cod) {
   if(cod.startsWith('CF')) return {key:'cf',label:'Calça Fem.',badge:'cf'};
   if(cod.startsWith('CM')) return {key:'cm',label:'Calça Masc.',badge:'cm'};
-  if(cod.startsWith('SS')) return {key:'ss',label:'Short Saia',badge:'ss'};
+  if(cod.startsWith('SS')) return {key:'sh',label:'Shorts',badge:'sh'};
   if(cod.startsWith('SA')) return {key:'sa2',label:'Saia',badge:'sa2'};
   if(cod.startsWith('S2')) return {key:'sh',label:'Shorts',badge:'sh'};
-  if(cod.startsWith('B22')) return {key:'bf',label:'Bermuda Fem.',badge:'bf'};
-  if(cod.startsWith('B2')) return {key:'bf',label:'Bermuda Fem.',badge:'bf'};
+  if(cod.startsWith('B2')) return {key:'sh',label:'Shorts',badge:'sh'};
   if(cod.startsWith('B3')) return {key:'bm',label:'Bermuda Masc.',badge:'bm'};
+  if(cod.startsWith('CA')) return {key:'ca',label:'Camisa',badge:'ca'};
+  if(cod.startsWith('JQ')) return {key:'jq',label:'Jaqueta',badge:'jq'};
   if(cod.startsWith('BL')) return {key:'bl',label:'Blusa',badge:'bl'};
   if(cod.startsWith('T2')) return {key:'tp',label:'Top',badge:'tp'};
   if(cod.startsWith('V2')) return {key:'vt',label:'Vestido',badge:'vt'};
@@ -4315,10 +4325,10 @@ function getModelagem(desc) {
   if(d.includes('WIDELEG')) return 'Wide Leg';
   if(d.includes('SUPERWIDE')) return 'Super Wide';
   // Cigarrete
-  if(d.includes('CALCAFEM.CIGARRETE')||d.includes('CALCAFEM. CIGARRETE')) return 'Cigarrete';
+  if(d.includes('CALCAFEM.CIGARRETE')||d.includes('CALCAFEM. CIGARRETE')||d.includes('CALCAMASC.CIGARRETE')||d.includes('CALCA MASC.CIGARRETE')) return 'Cigarrete';
   if(d.includes('CIGARRETE LIPO')) return 'Cigarrete Lipo';
-  if(d.includes('CIGARRETE SPORT FINO')) return 'Cigarrete Sport Fino';
-  if(d.includes('CIGARRETE PLUS SIZE')) return 'Cigarrete Plus Size';
+  if(d.includes('CIGARRETE SPORT FINO')||d.includes('CIGARRETE SPORTFINO')) return 'Cigarrete Sport Fino';
+  if(d.includes('CIGARRETE PLUS')) return 'Cigarrete Plus Size';
   if(d.includes('CIGARRETE')) return 'Cigarrete';
   // Skinny
   if(d.includes('SKINNYLIPO')||d.includes('SKINNY LIPO')) return 'Skinny Lipo';
@@ -4347,9 +4357,9 @@ function getModelagem(desc) {
   if(d.includes('SLOUCHY')) return 'Slouchy';
   if(d.includes('SLIM')) return 'Slim';
   if(d.includes('TRADICIONAL')) return 'Tradicional';
-  if(d.includes('SPORT FINO CROPPED')) return 'Sport Fino Cropped';
-  if(d.includes('SPORT FINO MEDIA')) return 'Sport Fino Média';
-  if(d.includes('SPORT FINO')) return 'Sport Fino';
+  if(d.includes('SPORT FINO CROPPED')||d.includes('SPORTFINO CROPPED')) return 'Sport Fino Cropped';
+  if(d.includes('SPORT FINO MEDIA')||d.includes('SPORTFINO MEDIA')) return 'Sport Fino Média';
+  if(d.includes('SPORT FINO')||d.includes('SPORTFINO')) return 'Sport Fino';
   if(d.includes('CICLISTA PLUS SIZE')) return 'Ciclista Plus Size';
   if(d.includes('CICLISTA')) return 'Ciclista';
   if(d.includes('GODE')) return 'Godê';
@@ -4390,13 +4400,13 @@ function getRefDados(codRep) {
 
 var TIPO_CORES={
   'cf':'#e0608a','cm':'#4a8fd4','sh':'#e05c5c','sa2':'#9b59b6',
-  'bf':'#e8724a','bm':'#2e86c1','bl':'#1abc9c','tp':'#f0a500',
-  'ss':'#c0392b','vt':'#8e44ad','outros':'#888'
+  'bm':'#2e86c1','bl':'#1abc9c','tp':'#f0a500','ca':'#27ae60','jq':'#d35400',
+  'vt':'#8e44ad','outros':'#888'
 };
 var TIPO_LABELS={
   'cf':'Calça Fem.','cm':'Calça Masc.','sh':'Shorts','sa2':'Saia',
-  'bf':'Bermuda Fem.','bm':'Bermuda Masc.','bl':'Blusa','tp':'Top',
-  'ss':'Short Saia','vt':'Vestido','outros':'Outros'
+  'bm':'Bermuda Masc.','bl':'Blusa','tp':'Top','ca':'Camisa','jq':'Jaqueta',
+  'vt':'Vestido','outros':'Outros'
 };
 
 function renderReferencias() {
@@ -4442,13 +4452,13 @@ function renderReferencias() {
   var segFem=0,segMasc=0,segCountry=0,segPlus=0;
   dados.forEach(function(d){
     var cod=d.cod, desc=d.desc.toUpperCase();
-    if(cod.startsWith('CF')||cod.startsWith('BF')||cod.startsWith('SS')||cod.startsWith('SA')||cod.startsWith('BL')||cod.startsWith('T2')||cod.startsWith('V2')||(cod.startsWith('S2'))){
+    if(cod.startsWith('CF')||cod.startsWith('B2')||cod.startsWith('SS')||cod.startsWith('SA')||cod.startsWith('BL')||cod.startsWith('T2')||cod.startsWith('V2')||(cod.startsWith('S2'))||cod.startsWith('CA')||cod.startsWith('JQ')&&desc.indexOf('MASC')<0){
       // feminino — verificar plus/country primeiro
-      if(desc.indexOf('PLUS SIZE')>=0||desc.indexOf('PLUSSIZE')>=0) segPlus+=d.qtde;
+      if(desc.indexOf('PLUS')>=0) segPlus+=d.qtde;
       else if(desc.indexOf('COUNTRY')>=0) segCountry+=d.qtde;
       else segFem+=d.qtde;
-    } else if(cod.startsWith('CM')||cod.startsWith('BM')||cod.startsWith('B3')){
-      if(desc.indexOf('PLUS SIZE')>=0||desc.indexOf('PLUSSIZE')>=0) segPlus+=d.qtde;
+    } else if(cod.startsWith('CM')||cod.startsWith('BM')||cod.startsWith('B3')||(cod.startsWith('JQ')&&desc.indexOf('MASC')>=0)){
+      if(desc.indexOf('PLUS')>=0) segPlus+=d.qtde;
       else if(desc.indexOf('COUNTRY')>=0) segCountry+=d.qtde;
       else segMasc+=d.qtde;
     }
@@ -4483,7 +4493,7 @@ function renderReferencias() {
     if(cod.startsWith('CM')) return 'Calça ';
     if(cod.startsWith('S2')||cod.startsWith('SS')) return 'Shorts ';
     if(cod.startsWith('SA')) return 'Saia ';
-    if(cod.startsWith('BF')||cod.startsWith('B2')) return 'Bermuda ';
+    if(cod.startsWith('B2')) return 'Bermuda ';
     if(cod.startsWith('BM')||cod.startsWith('B3')) return 'Bermuda ';
     return '';
   }
@@ -4572,7 +4582,7 @@ function renderRefTabela(dados, totalQtde){
   } else if(refFiltroSeg==='PLUS'){
     filtrados=dados.filter(function(d){
       var u=d.desc.toUpperCase();
-      return u.indexOf('PLUS SIZE')>=0||u.indexOf('PLUSSIZE')>=0;
+      return u.indexOf('PLUS')>=0;
     });
   } else if(refFiltroSeg==='MASC'){
     filtrados=dados.filter(function(d){
