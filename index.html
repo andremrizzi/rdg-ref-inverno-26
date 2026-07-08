@@ -4495,14 +4495,19 @@ function renderReferencias() {
     if(cod.startsWith('SA')) return 'Saia ';
     if(cod.startsWith('B2')) return 'Bermuda ';
     if(cod.startsWith('BM')||cod.startsWith('B3')) return 'Bermuda ';
+    if(cod.startsWith('CA')) return 'Camisa ';
+    if(cod.startsWith('JQ')) return 'Jaqueta ';
     return '';
   }
 
   // Gráfico Top 20 Modelagens Feminino
   var modelMapFem={};
   dados.filter(function(d){
-    return d.cod.startsWith('CF')||d.cod.startsWith('SA')||d.cod.startsWith('BF')||
-           d.cod.startsWith('SS')||d.cod.startsWith('S2');
+    if(d.cod.startsWith('CF')||d.cod.startsWith('SA')||d.cod.startsWith('B2')||
+       d.cod.startsWith('SS')||d.cod.startsWith('S2')||d.cod.startsWith('BL')||
+       d.cod.startsWith('T2')||d.cod.startsWith('V2')) return true;
+    if(d.cod.startsWith('CA')||d.cod.startsWith('JQ')) return d.desc.toUpperCase().indexOf('MASC')<0;
+    return false;
   }).forEach(function(d){
     var lbl=tipoPrefix(d.cod)+d.mod;
     if(!modelMapFem[lbl])modelMapFem[lbl]=0;
@@ -4518,7 +4523,9 @@ function renderReferencias() {
   // Gráfico Top 10 Modelagens Masculino
   var modelMapMasc={};
   dados.filter(function(d){
-    return d.cod.startsWith('CM')||d.cod.startsWith('BM')||d.cod.startsWith('B3');
+    if(d.cod.startsWith('CM')||d.cod.startsWith('BM')||d.cod.startsWith('B3')) return true;
+    if(d.cod.startsWith('CA')||d.cod.startsWith('JQ')) return d.desc.toUpperCase().indexOf('MASC')>=0;
+    return false;
   }).forEach(function(d){
     var lbl=tipoPrefix(d.cod)+d.mod;
     if(!modelMapMasc[lbl])modelMapMasc[lbl]=0;
